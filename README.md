@@ -18,5 +18,6 @@ The page contains the install steps for Claude (section "Installation instructio
 | Path | What it is |
 |---|---|
 | `skills/onboarding/` | `/onboarding`: get-to-know-you session, writes a project CLAUDE.md, suggests first tasks |
+| `skills/version-control/` | `/version-control`: safety copy, Git + LFS setup with templates for Source mods, off-site backup, everyday workflow |
 | `templates/user-CLAUDE.md` | Personal preferences, installed to `~/.claude/CLAUDE.md` (merged, never overwritten) |
 | `index.html` | The welcome page served at peaj.de/bday (GitHub Pages) |

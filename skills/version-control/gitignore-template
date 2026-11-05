@@ -1,0 +1,30 @@
+# Starting point for a Source / Strata mod. Review with the user before using it.
+
+# --- Hammer and compiler byproducts (regenerated on every compile) ----------
+*.vmx
+*.prt
+*.lin
+*.log
+*.ain
+*.bak
+*.cache
+
+# --- Blender backup saves ----------------------------------------------------
+*.blend1
+*.blend2
+
+# --- Operating system clutter -------------------------------------------------
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# --- Raw scan data: backed up separately, never in git ------------------------
+# Fill in the real folders found during setup, for example:
+# scans_raw/
+# *.rcproj
+# *.psx
+# *.cr2
+# *.cr3
+# *.nef
+# *.arw
+# *.dng
