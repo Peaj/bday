@@ -19,5 +19,8 @@ The page contains the install steps for Claude (section "Installation instructio
 |---|---|
 | `skills/onboarding/` | `/onboarding`: get-to-know-you session, writes a project CLAUDE.md, suggests first tasks |
 | `skills/version-control/` | `/version-control`: safety copy, Git + LFS setup with templates for Source mods, off-site backup, everyday workflow |
+| `skills/strata-port/` | `/strata-port`: inventory of maps and instances, FGD comparison, old vs. new compiled map comparison (Python scripts, standard library only) |
+| `skills/pbr-materials/` | `/pbr-materials`: find texture sets, pack channels, flip normal maps, one test material, then batches (Python + Pillow) |
+| `skills/source-reference/` | Background knowledge Claude loads automatically: how to look things up, scale, models, materials, sound, compiling |
 | `templates/user-CLAUDE.md` | Personal preferences, installed to `~/.claude/CLAUDE.md` (merged, never overwritten) |
 | `index.html` | The welcome page served at peaj.de/bday (GitHub Pages) |
