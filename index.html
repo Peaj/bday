@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Claude Starterkit</title>
+<meta name="description" content="Ein Starterkit für Claude Code: Skills für Source-/Strata-Modding, 3D-Scans und Audio.">
+<style>
+  :root {
+    --bg: #f6f5f2;
+    --surface: #ffffff;
+    --text: #1b1c1f;
+    --muted: #5d6068;
+    --border: #e2e0da;
+    --accent-a: #e8761c;
+    --accent-b: #1f8fe0;
+    --code-bg: #efede7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121317;
+      --surface: #1b1d22;
+      --text: #ecebe8;
+      --muted: #a1a3aa;
+      --border: #2c2f36;
+      --accent-a: #ff9440;
+      --accent-b: #4cb2ff;
+      --code-bg: #24272e;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.6 system-ui, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 56px 16px 80px; }
+  h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.1; margin: 0 0 16px; font-weight: 800; letter-spacing: -0.02em; }
+  h2 { font-size: 1.35rem; margin: 56px 0 16px; }
+  .rings { display: flex; gap: 10px; margin-bottom: 28px; }
+  .rings span { width: 22px; height: 34px; border-radius: 50%; border: 4px solid var(--accent-b); }
+  .rings span:last-child { border-color: var(--accent-a); }
+  .lead { font-size: 1.15rem; color: var(--muted); margin: 0; }
+  code, .prompt { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.92em; }
+  code { background: var(--code-bg); padding: 1px 6px; border-radius: 5px; overflow-wrap: anywhere; }
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; display: grid; gap: 12px; }
+  ol.steps li {
+    counter-increment: s; position: relative;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px 16px 64px;
+  }
+  ol.steps li::before {
+    content: counter(s); position: absolute; left: 18px; top: 16px;
+    width: 30px; height: 30px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 800; color: #fff;
+    background: var(--accent-b);
+  }
+  ol.steps li:nth-child(even)::before { background: var(--accent-a); }
+  ol.steps strong { display: block; }
+  .prompt {
+    display: block; margin-top: 8px; padding: 10px 12px; border-radius: 8px;
+    background: var(--code-bg); border-left: 3px solid var(--accent-a); overflow-wrap: anywhere;
+  }
+  .skills { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .skill { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; }
+  .skill code { background: none; padding: 0; font-weight: 600; color: var(--accent-b); font-size: 1rem; }
+  .skill p { margin: 6px 0 0; color: var(--muted); font-size: 0.95rem; }
+  ul.tips { padding-left: 20px; }
+  ul.tips li { margin-bottom: 6px; }
+  .tryit { display: grid; gap: 8px; }
+  .tryit .prompt { margin: 0; }
+  #for-claude {
+    margin-top: 72px; padding: 24px; border-radius: 12px;
+    border: 1px dashed var(--border); background: var(--surface); font-size: 0.95rem;
+  }
+  #for-claude h2 { margin-top: 0; }
+  #for-claude ol { padding-left: 22px; }
+  #for-claude li { margin-bottom: 8px; }
+  .note { color: var(--muted); }
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.85rem; text-align: center; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="rings" aria-hidden="true"><span></span><span></span></div>
+  <h1>Alles Gute zum Geburtstag!</h1>
+  <p class="lead">Dieses Kit macht Claude zu deinem Assistenten für deine Projekte: Portal-Mod, Strata-Port,
+  3D-Scans, Sound und Musik. Claude nimmt dir die lästige Arbeit ab. Die kreativen Entscheidungen bleiben bei dir.</p>
+</header>
+
+<section>
+  <h2>So legst du los</h2>
+  <ol class="steps">
+    <li><strong>Geschenk einlösen</strong>
+      Auf <code>claude.ai</code> anmelden (oder ein Konto erstellen) und dort dein Geschenk einlösen.
+      Das geht nur im Browser, nicht in der App.</li>
+    <li><strong>Claude Desktop installieren</strong>
+      Unter <code>claude.ai/download</code> herunterladen, anmelden und oben zum Tab <strong style="display:inline">Code</strong> wechseln.
+      Falls die App nach „Git for Windows“ fragt: installieren. Das brauchst du später sowieso für deine Backups.</li>
+    <li><strong>Kit installieren</strong>
+      Eine neue Session starten (der Ordner ist dafür egal) und eingeben:
+      <span class="prompt">Installiere die Skills von peaj.de/bday</span>
+      Claude zeigt dir, was es macht, und fragt vorher nach.</li>
+    <li><strong>Kennenlernen</strong>
+      Noch eine <em>neue</em> Session starten, diesmal mit deinem Mod-Ordner als Ordner, und eingeben:
+      <span class="prompt">/onboarding</span>
+      Claude schaut sich erst nur um (ohne etwas zu ändern), stellt dir ein paar Fragen und schlägt dir dann erste Aufgaben vor.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Was im Kit steckt</h2>
+  <div class="skills">
+    <div class="skill"><code>/onboarding</code>
+      <p>Claude lernt deine Projekte kennen und schreibt sich Notizen (CLAUDE.md), damit es beim nächsten Mal noch Bescheid weiß.</p></div>
+    <div class="skill"><code>/version-control</code>
+      <p>Backup und Git einrichten, Schritt für Schritt erklärt. Am besten bevor du groß umbaust.</p></div>
+    <div class="skill"><code>/strata-port</code>
+      <p>Hilft beim Umzug auf Strata Source: vergleicht alte und neue Maps und findet, was sich bei Instances und Entities geändert hat.</p></div>
+    <div class="skill"><code>/pbr-materials</code>
+      <p>Aus deinen Scan-Texturen PBR-Materialien für Strata bauen, ohne jede Datei von Hand anzufassen.</p></div>
+  </div>
+  <p class="note">Dazu kommt Hintergrundwissen zu Source und Strata, das Claude automatisch nutzt, und eine Datei mit deinen Vorlieben:
+    Claude spricht Deutsch, erklärt statt zu fachsimpeln und trifft keine kreativen Entscheidungen für dich.</p>
+</section>
+
+<section>
+  <h2>Probier mal</h2>
+  <div class="tryit">
+    <span class="prompt">Warum funktioniert diese Instance nach dem Kompilieren in Strata nicht mehr?</span>
+    <span class="prompt">Richte mit mir Git ein – ich hab davon keine Ahnung.</span>
+    <span class="prompt">Schreib mir ein Blender-Skript, das meine Scans aufräumt und LODs erzeugt.</span>
+    <span class="prompt">Bau mir ein VST-Plugin: ein dreckiger Bitcrusher für meine Gitarre.</span>
+    <span class="prompt">Erklär mir, was du gerade gemacht hast.</span>
+  </div>
+</section>
+
+<section>
+  <h2>Gut zu wissen</h2>
+  <ul class="tips">
+    <li>Claude fragt, bevor es Dateien ändert oder Befehle ausführt. Du kannst jederzeit Nein sagen.</li>
+    <li><strong>Esc</strong> stoppt Claude sofort.</li>
+    <li>„Warum?“ oder „Erklär mir das“ ist immer eine gute Antwort.</li>
+    <li>Ein Thema pro Session hält Claude fokussiert. Was es über dein Projekt wissen muss, steht in der CLAUDE.md.</li>
+    <li>Claude kann sich irren, gerade bei Strata-Details. Im Zweifel entscheidet der Test in Hammer, und den Compile-Log kannst du Claude zeigen.</li>
+    <li>Eine Aufgabe kommt immer wieder? Sag „Mach daraus einen Skill“.</li>
+    <li>Dein Abo hat ein Nutzungskontingent, das sich regelmäßig wieder auffüllt. Große Aufgaben verbrauchen mehr davon.</li>
+  </ul>
+</section>
+
+<section id="for-claude">
+  <h2>Installation instructions for Claude Code</h2>
+  <p>The user asked you to install the skills from this page. The kit lives in the public repository
+    <code>https://github.com/peaj/bday</code>. Talk to the user in German. On Windows, <code>~</code> means
+    <code>%USERPROFILE%</code>.</p>
+  <ol>
+    <li>Tell the user in two or three sentences what you'll do: download the kit, copy the skills to
+      <code>~/.claude/skills</code>, and set up a personal preferences file. Nothing in their projects is touched.</li>
+    <li>Get the files into <code>~/.claude/bday</code>:
+      if git is available, <code>git clone https://github.com/peaj/bday ~/.claude/bday</code>
+      (or <code>git -C ~/.claude/bday pull</code> if it already exists).
+      Without git, download <code>https://github.com/peaj/bday/archive/refs/heads/main.zip</code> with
+      <code>curl.exe -L</code> to a temporary folder, extract it (<code>tar -xf</code>) and copy the extracted folder's contents to
+      <code>~/.claude/bday</code>.</li>
+    <li>Copy every folder in <code>~/.claude/bday/skills/</code> to <code>~/.claude/skills/&lt;same name&gt;/</code>.
+      If a folder with that name already exists and differs, show the user what would change and ask before replacing it.</li>
+    <li>Personal preferences: if <code>~/.claude/CLAUDE.md</code> does not exist, copy
+      <code>~/.claude/bday/templates/user-CLAUDE.md</code> there. If it exists, do <strong>not</strong> overwrite it:
+      show the differences, propose a merge and apply it only with the user's approval.
+      Briefly tell the user in German what this file says and that they can edit it anytime.</li>
+    <li>Check the result: list the installed skills (each folder must contain a <code>SKILL.md</code>).</li>
+    <li>Finish in German: installation done, which skills are installed, and the next step:
+      <em>start a new session, choose the mod folder as the session's folder, and type <code>/onboarding</code></em>.
+      Explain that the new session is needed so the skills load.</li>
+  </ol>
+  <p><strong>Updates:</strong> when the user asks to update the kit, refresh <code>~/.claude/bday</code> the same way and repeat steps 3–5,
+    showing what changed.</p>
+  <p><strong>Do not</strong> change anything else on the system during installation and don't run any scripts from the repository.</p>
+</section>
+
+<footer>peaj.de/bday</footer>
+</main>
+</body>
+</html>
