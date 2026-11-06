@@ -38,9 +38,18 @@
   main { max-width: 760px; margin: 0 auto; padding: 56px 16px 80px; }
   h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.1; margin: 0 0 16px; font-weight: 800; letter-spacing: -0.02em; }
   h2 { font-size: 1.35rem; margin: 56px 0 16px; }
-  .rings { display: flex; gap: 10px; margin-bottom: 28px; }
-  .rings span { width: 22px; height: 34px; border-radius: 50%; border: 4px solid var(--accent-b); }
-  .rings span:last-child { border-color: var(--accent-a); }
+  .scene { display: block; width: 100%; height: auto; margin: -24px 0 8px; overflow: visible; }
+  .portal .rim { fill: none; stroke-width: 7; }
+  .portal .glow { fill: none; stroke-width: 18; opacity: 0.35; filter: url(#blur); }
+  .portal .inner { opacity: 0.9; }
+  .portal .swirl { fill: none; stroke-width: 2.5; stroke-dasharray: 18 26; opacity: 0.55;
+    animation: swirl 2.4s linear infinite; }
+  .portal.flash .glow { opacity: 0.85; transition: opacity 0.08s; }
+  .portal .glow { transition: opacity 0.6s; }
+  #portal-a .rim, #portal-a .glow, #portal-a .swirl { stroke: var(--accent-b); }
+  #portal-b .rim, #portal-b .glow, #portal-b .swirl { stroke: var(--accent-a); }
+  @keyframes swirl { to { stroke-dashoffset: -88; } }
+  @media (prefers-reduced-motion: reduce) { .portal .swirl { animation: none; } }
   .lead { font-size: 1.15rem; color: var(--muted); margin: 0; }
   code, .prompt { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 0.92em; }
   code { background: var(--code-bg); padding: 1px 6px; border-radius: 5px; overflow-wrap: anywhere; }
@@ -85,7 +94,57 @@
 <main>
 
 <header>
-  <div class="rings" aria-hidden="true"><span></span><span></span></div>
+  <svg class="scene" viewBox="0 0 760 280" role="img" aria-label="Zwei Portale, durch die ein Geschenk, ein Würfel, ein kleines Pixelwesen und eine Note im Bogen fliegen">
+    <defs>
+      <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+      <radialGradient id="inner-a"><stop offset="0" stop-color="var(--accent-b)" stop-opacity="0.15"/><stop offset="1" stop-color="var(--accent-b)" stop-opacity="0.75"/></radialGradient>
+      <radialGradient id="inner-b"><stop offset="0" stop-color="var(--accent-a)" stop-opacity="0.15"/><stop offset="1" stop-color="var(--accent-a)" stop-opacity="0.75"/></radialGradient>
+      <clipPath id="flight-clip" clipPathUnits="userSpaceOnUse"><polygon id="clip-poly" points="0,0"/></clipPath>
+
+      <!-- flying objects, each centered on 0,0 and about 48 units wide -->
+      <g id="obj-gift">
+        <rect x="-21" y="-12" width="42" height="32" rx="3" fill="#8b5cf6"/>
+        <rect x="-24" y="-20" width="48" height="11" rx="3" fill="#a78bfa"/>
+        <rect x="-4" y="-20" width="8" height="40" fill="#facc15"/>
+        <path d="M0 -20 C -6 -34, -22 -30, -12 -21 Z M0 -20 C 6 -34, 22 -30, 12 -21 Z" fill="#facc15"/>
+      </g>
+      <g id="obj-cube">
+        <rect x="-22" y="-22" width="44" height="44" rx="6" fill="#cfd3da" stroke="#7d838e" stroke-width="2"/>
+        <path d="M-22 -10 V-16 a6 6 0 0 1 6 -6 H-10 M10 -22 H16 a6 6 0 0 1 6 6 V-10 M22 10 V16 a6 6 0 0 1 -6 6 H10 M-10 22 H-16 a6 6 0 0 1 -6 -6 V10"
+              fill="none" stroke="#6b7280" stroke-width="5" stroke-linecap="round"/>
+        <circle r="11" fill="#eef0f3" stroke="#9aa1ab" stroke-width="2"/>
+        <path d="M0 6 C -9 -1, -7 -8, -3 -7 C -1 -6.5, 0 -5, 0 -4 C 0 -5, 1 -6.5, 3 -7 C 7 -8, 9 -1, 0 6 Z" fill="#ec4899"/>
+      </g>
+      <g id="obj-critter" fill="#d97757">
+        <rect x="-18" y="-14" width="36" height="20"/>
+        <rect x="-24" y="-6" width="6" height="6"/><rect x="18" y="-6" width="6" height="6"/>
+        <rect x="-15" y="6" width="5" height="9"/><rect x="-5" y="6" width="4" height="9"/>
+        <rect x="2" y="6" width="4" height="9"/><rect x="10" y="6" width="5" height="9"/>
+        <rect x="-10" y="-8" width="5" height="6" fill="#1b1c1f"/><rect x="5" y="-8" width="5" height="6" fill="#1b1c1f"/>
+      </g>
+      <g id="obj-note" fill="var(--text)">
+        <ellipse cx="-10" cy="14" rx="9" ry="7" transform="rotate(-20 -10 14)"/>
+        <ellipse cx="14" cy="8" rx="9" ry="7" transform="rotate(-20 14 8)"/>
+        <rect x="-3" y="-22" width="4" height="36"/><rect x="21" y="-28" width="4" height="36"/>
+        <path d="M-3 -22 L25 -28 L25 -18 L-3 -12 Z"/>
+      </g>
+    </defs>
+
+    <g id="portal-a" class="portal" transform="translate(140 190) rotate(-40)">
+      <ellipse class="glow" rx="36" ry="84"/>
+      <ellipse class="inner" rx="34" ry="82" fill="url(#inner-a)"/>
+      <ellipse class="swirl" rx="26" ry="70"/>
+      <ellipse class="rim" rx="34" ry="82"/>
+    </g>
+    <g id="portal-b" class="portal" transform="translate(620 190) rotate(40)">
+      <ellipse class="glow" rx="36" ry="84"/>
+      <ellipse class="inner" rx="34" ry="82" fill="url(#inner-b)"/>
+      <ellipse class="swirl" rx="26" ry="70"/>
+      <ellipse class="rim" rx="34" ry="82"/>
+    </g>
+
+    <g clip-path="url(#flight-clip)"><g id="flyer"><use id="flyer-use" href="#obj-gift"/></g></g>
+  </svg>
   <h1>Alles Gute zum Geburtstag!</h1>
   <p class="lead">Dieses Kit macht Claude zu deinem Assistenten für deine Projekte: Portal-Mod, Strata-Port,
   3D-Scans, Sound und Musik. Claude nimmt dir die lästige Arbeit ab. Die kreativen Entscheidungen bleiben bei dir.</p>
@@ -183,5 +242,78 @@
 
 <footer>peaj.de/bday</footer>
 </main>
+<script>
+(() => {
+  // Two portals facing each other at ANGLE degrees above horizontal. Objects fly a ballistic arc
+  // from portal A into portal B and are clipped to the space in front of both portal planes,
+  // so they appear to come out of one and disappear into the other.
+  const A = { x: 140, y: 190 }, B = { x: 620, y: 190 };
+  const ANGLE = 40 * Math.PI / 180;
+  const height = (B.x - A.x) * Math.tan(ANGLE) / 4;
+  const nA = [Math.cos(ANGLE), -Math.sin(ANGLE)], nB = [-Math.cos(ANGLE), -Math.sin(ANGLE)];
+
+  // clip region = big box ∩ in front of A ∩ in front of B (Sutherland–Hodgman)
+  const clipHalf = (poly, p, n) => {
+    const side = q => (q[0] - p.x) * n[0] + (q[1] - p.y) * n[1];
+    const out = [];
+    poly.forEach((cur, i) => {
+      const prev = poly[(i + poly.length - 1) % poly.length];
+      const sc = side(cur), sp = side(prev);
+      if (sc >= 0 !== sp >= 0) {
+        const t = sp / (sp - sc);
+        out.push([prev[0] + (cur[0] - prev[0]) * t, prev[1] + (cur[1] - prev[1]) * t]);
+      }
+      if (sc >= 0) out.push(cur);
+    });
+    return out;
+  };
+  let poly = [[-200, -200], [960, -200], [960, 480], [-200, 480]];
+  poly = clipHalf(clipHalf(poly, A, nA), B, nB);
+  document.getElementById("clip-poly").setAttribute("points", poly.map(p => p.join(",")).join(" "));
+
+  const flyer = document.getElementById("flyer");
+  const use = document.getElementById("flyer-use");
+  const portals = [document.getElementById("portal-a"), document.getElementById("portal-b")];
+  const objects = [
+    { id: "obj-gift", spin: 420 },
+    { id: "obj-cube", spin: -360 },
+    { id: "obj-critter", spin: 0, wobble: 12 },
+    { id: "obj-note", spin: 200 },
+  ];
+
+  const place = (t, obj) => {
+    const x = A.x + (B.x - A.x) * t;
+    const y = A.y - 4 * height * t * (1 - t);
+    const rot = obj.spin * t + (obj.wobble ? Math.sin(t * Math.PI * 4) * obj.wobble : 0);
+    flyer.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot.toFixed(1)}) scale(1.4)`);
+  };
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) { place(0.5, objects[0]); return; }
+
+  const FLIGHT = 1800, GAP = 450, T0 = -0.14, T1 = 1.14;
+  let current = 0, start = null, flashedIn = false, flashedOut = false;
+  const flash = el => { el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 160); };
+  const next = () => {
+    let i;
+    do { i = Math.floor(Math.random() * objects.length); } while (i === current && objects.length > 1);
+    current = i;
+    use.setAttribute("href", "#" + objects[current].id);
+  };
+
+  const frame = now => {
+    if (start === null) start = now;
+    const elapsed = now - start;
+    if (elapsed > FLIGHT + GAP) { start = now; flashedIn = flashedOut = false; next(); }
+    const k = Math.min(elapsed / FLIGHT, 1);
+    const t = T0 + (T1 - T0) * k;
+    if (!flashedOut && t > 0) { flashedOut = true; flash(portals[0]); }
+    if (!flashedIn && t > 1) { flashedIn = true; flash(portals[1]); }
+    place(t, objects[current]);
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>
