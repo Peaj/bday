@@ -122,6 +122,7 @@ def main():
     missing_instances = []
     instance_users = defaultdict(set)
     params_declared = defaultdict(set)     # instance vmf -> declared $params
+    params_default = defaultdict(set)      # instance vmf -> declared $params that have a default value
     params_used = defaultdict(set)         # instance vmf -> $params referenced in values
     io_proxies = defaultdict(int)
     instance_inputs = []                   # (map, entity, connection) using "instance:" syntax
@@ -147,16 +148,21 @@ def main():
                     instance_inputs.append((vmf, kv.get("targetname", "(unnamed)"), c))
                 elif target_cls:
                     usage_in[target_cls].add(c["input"])
-            if cls not in ("func_instance", "func_instance_parms"):
+            if cls == "func_instance_parms":
+                values = []
+            elif cls == "func_instance":
+                # only the replacement values count as use (passing a parameter on to a nested instance)
+                values = [v.split(None, 1)[1] for k, v in kv.items() if k.startswith("replace") and len(v.split(None, 1)) > 1]
+            else:
                 values = list(kv.values()) + [c[f] for c in e["outputs"] for f in ("target", "input", "param")]
-                for v in values:
-                    for p in re.findall(r"\$[A-Za-z_]\w*", v):
-                        params_used[vmf].add(p.lower())
+            for v in values:
+                for p in re.findall(r"\$[A-Za-z_]\w*", v):
+                    params_used[vmf].add(p.lower())
             if cls == "func_instance":
                 file_value = kv.get("file", "")
                 resolved = resolve_instance(file_value, vmf, roots) if file_value else None
                 fixup = {"0": "prefix", "1": "postfix", "2": "none"}.get(kv.get("fixup_style", "0"), kv.get("fixup_style"))
-                params = sorted(v.split()[0] for k, v in kv.items() if k.startswith("replace") and v.strip())
+                params = sorted({v.split()[0].lower() for k, v in kv.items() if k.startswith("replace") and v.strip()})
                 instances_used.append((vmf, kv.get("targetname", ""), file_value, resolved, fixup, params))
                 if resolved:
                     instance_users[resolved].add(vmf.name)
@@ -165,7 +171,10 @@ def main():
             elif cls == "func_instance_parms":
                 for k, v in kv.items():
                     if k.startswith("parm") and v.strip():
-                        params_declared[vmf].add(v.split()[0].lower())
+                        parts = v.split()
+                        params_declared[vmf].add(parts[0].lower())
+                        if len(parts) > 2:
+                            params_default[vmf].add(parts[0].lower())
             elif cls == "func_instance_io_proxy":
                 io_proxies[vmf] += 1
 
@@ -183,26 +192,62 @@ def main():
         w("None. Every func_instance points to an existing file.")
     w("")
 
-    w("## Instance parameters\n")
-    problems = False
-    for inst in sorted(set(params_declared) | set(params_used)):
-        used, declared = params_used[inst], params_declared[inst]
-        undeclared, unused = used - declared, declared - used
-        if undeclared or unused:
-            problems = True
-            w(f"- `{inst.name}`: " + "; ".join(filter(None, [
-                f"used but not declared in func_instance_parms: {', '.join(sorted(undeclared))}" if undeclared else "",
-                f"declared but never used: {', '.join(sorted(unused))}" if unused else ""])))
-    if not problems:
-        w("No mismatches between declared and used $parameters.")
+    w("## Instance placements that leave $parameters unfilled\n")
+    w("The instance uses these parameters, but this placement has no replace entry for them, so the literal "
+      "`$name` may end up in the compiled map. Parameters with a default in func_instance_parms are marked; "
+      "check how the compiler handles defaults before treating those as errors.\n")
+    # Parameters a nested placement leaves open are filled by whoever places the outer instance,
+    # so they count as used by the outer instance. Only report at files nobody places as an instance.
+    placements_in = defaultdict(list)
+    for vmf, _, _, resolved, _, replaced in instances_used:
+        if resolved:
+            placements_in[vmf].append((resolved, set(replaced)))
+    memo = {}
+
+    def effective_used(f, stack=()):
+        if f in memo:
+            return memo[f]
+        if f in stack:
+            return set()
+        used = set(params_used[f])
+        for inner, replaced in placements_in[f]:
+            used |= effective_used(inner, stack + (f,)) - replaced
+        memo[f] = used
+        return used
+
+    def is_instance(f):
+        return f in instance_users or f in params_declared or "instances" in (p.lower() for p in f.parts)
+
+    unfilled = []
+    for vmf, name, file_value, resolved, _, replaced in instances_used:
+        if not resolved or is_instance(vmf):
+            continue
+        missing = sorted(effective_used(resolved) - set(replaced))
+        if missing:
+            marked = [p + (" (has default)" if p in params_default[resolved] else "") for p in missing]
+            unfilled.append(f"- `{vmf.name}` placement `{name or '(unnamed)'}` → `{resolved.name}`: {', '.join(marked)}")
+    out.extend(unfilled[:300] or ["None. Every placement fills in every parameter its instance uses."])
+    if len(unfilled) > 300:
+        w(f"- … and {len(unfilled) - 300} more")
+    w("")
+
+    unused = [(inst, sorted(params_declared[inst] - effective_used(inst))) for inst in sorted(params_declared)]
+    unused = [(i, p) for i, p in unused if p]
+    if unused:
+        w("Declared in func_instance_parms but never used in the instance (harmless, just clutter): "
+          + "; ".join(f"`{i.name}`: {', '.join(p)}" for i, p in unused[:40]))
     w("")
 
     w("## Instance I/O (a frequent source of port problems)\n")
     if io_proxies or instance_inputs:
-        for vmf, n in sorted(io_proxies.items()):
-            w(f"- `{vmf.name}`: {n} func_instance_io_proxy")
+        proxy_files = sorted(io_proxies)
+        w(f"{len(proxy_files)} instance files contain a func_instance_io_proxy: "
+          + ", ".join(f"`{p.name}`" for p in proxy_files[:40]) + (" …" if len(proxy_files) > 40 else ""))
+        w(f"\n{len(instance_inputs)} connections use the `instance:` syntax:\n")
         for vmf, ent, c in instance_inputs[:200]:
             w(f"- `{vmf.name}` `{ent}`: {c['output']} → `{c['target']}`.{c['input']}")
+        if len(instance_inputs) > 200:
+            w(f"- … and {len(instance_inputs) - 200} more")
     else:
         w("No instance I/O found.")
     w("")

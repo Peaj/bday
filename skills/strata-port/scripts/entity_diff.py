@@ -126,6 +126,32 @@ def diff(old_data, new_data, limit):
         w(f"\n({len(old_broken)} connections were already pointing at nothing in the old map; they're not listed.)")
     w("")
 
+    # 1b. Parent references that resolve in one map but not the other: the entity moves (or stops moving) with its parent
+    def unresolved_parents(ents):
+        names = {e["targetname"].lower() for e in ents if e["targetname"]}
+        bad = set()
+        for e in ents:
+            p = e["keyvalues"].get("parentname")
+            if isinstance(p, str) and p and not p.startswith("!") and p.split(",")[0].lower() not in names:
+                bad.add((e["classname"], _norm(e["keyvalues"].get("origin", ""))))
+        return bad
+
+    old_bad, new_bad = unresolved_parents(old), unresolved_parents(new)
+    w("## 1b. Parent references that changed state\n")
+    flips = []
+    for e in new:
+        key = (e["classname"], _norm(e["keyvalues"].get("origin", "")))
+        p = e["keyvalues"].get("parentname")
+        if not isinstance(p, str) or not p:
+            continue
+        if key in old_bad and key not in new_bad:
+            flips.append(f"- {_label(e)}: parent `{p}` **now resolves** (it pointed at nothing before, so the entity "
+                         "used to stay put and now moves with its parent)")
+        elif key in new_bad and key not in old_bad:
+            flips.append(f"- {_label(e)}: parent `{p}` **points at nothing now** (it resolved before)")
+    out.extend(flips[:limit] or ["None."])
+    w("")
+
     pairs, old_only, new_only = match_entities(old, new)
 
     # 2. Renamed entities
@@ -165,7 +191,13 @@ def diff(old_data, new_data, limit):
         for k in sorted(keys):
             a, b = eo["keyvalues"].get(k), en["keyvalues"].get(k)
             if a is None or b is None or _norm(a) != _norm(b):
-                changes.append(f"`{k}`: {a!r} → {b!r}")
+                note = ""
+                if k == "spawnflags" and isinstance(a, str) and isinstance(b, str) and a.isdigit() and b.isdigit():
+                    added, removed = int(b) & ~int(a), int(a) & ~int(b)
+                    bits = [f"+{1 << i}" for i in range(32) if added >> i & 1] + \
+                           [f"-{1 << i}" for i in range(32) if removed >> i & 1]
+                    note = f" (flags {' '.join(bits)})"
+                changes.append(f"`{k}`: {a!r} → {b!r}{note}")
         if changes:
             kv_changes.append((en, changes))
         co = {_conn_key(c): c for c in eo["outputs"]}

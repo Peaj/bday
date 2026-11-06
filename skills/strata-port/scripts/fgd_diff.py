@@ -231,15 +231,21 @@ def compare_full(old, new, limit):
     return out
 
 
+COMPILER_CLASSES = {"func_instance", "func_instance_parms", "func_instance_io_proxy"}
+GENERIC_KEYS = {"origin", "angles", "targetname", "spawnflags", "parentname", "mapversion", "hammerid", "id"}
+LEGACY_KEYS = {"mindxlevel", "maxdxlevel", "mincpulevel", "maxcpulevel", "mingpulevel", "maxgpulevel", "disablex360"}
+
+
 def compare_usage(old, new, usage):
     out = []
     w = out.append
     w("## What your maps use that is gone or unknown in the new FGD\n")
     found = False
+    legacy_seen = set()
     for cls in sorted(usage, key=lambda c: -usage[c]["count"]):
         u = usage[cls]
-        if cls in ("worldspawn", "func_instance", "func_instance_parms", "func_instance_io_proxy") and cls not in new.classes:
-            continue
+        if cls in COMPILER_CLASSES:
+            continue  # handled by the map compiler, not described like normal entities
         b = new.resolved(cls)
         a = old.resolved(cls) if old else None
         where = f"{u['count']}× in {', '.join(u['maps'][:5])}{' …' if len(u['maps']) > 5 else ''}"
@@ -250,10 +256,13 @@ def compare_usage(old, new, usage):
             continue
         lines = []
         for part, used in (("kv", u["keyvalues"]), ("out", u["outputs"]), ("in", u["inputs"])):
-            missing = sorted(x for x in used if x.lower() not in {k.lower() for k in b[part]})
+            known = {k.lower() for k in b[part]}
+            missing = sorted(x for x in used if x.strip() and x.lower() not in known
+                             and not x.lower().startswith(("instance:", "$")))
             if part == "kv":
-                missing = [x for x in missing if x not in ("origin", "angles", "targetname", "spawnflags", "parentname")
-                           and not x.startswith("_")]
+                legacy_seen.update(x.lower() for x in missing if x.lower() in LEGACY_KEYS)
+                missing = [x for x in missing if x.lower() not in GENERIC_KEYS | LEGACY_KEYS
+                           and not x.startswith("_") and not x.lower().startswith("replace")]
             if missing:
                 tag = []
                 for x in missing:
@@ -266,6 +275,9 @@ def compare_usage(old, new, usage):
             out.extend(lines)
     if not found:
         w("Nothing. Every class, keyvalue and I/O your maps use exists in the new FGD.")
+    if legacy_seen:
+        w(f"\nNot listed above: old hardware-level keys ({', '.join(sorted(legacy_seen))}). "
+          "They only filtered entities by graphics level on old hardware.")
     w("\nNote: an FGD only describes what Hammer shows. Something missing here may still work in the engine, "
       "and something present can still behave differently. Use this list to decide what to test first.")
     return out
