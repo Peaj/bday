@@ -123,10 +123,11 @@
         <rect x="-10" y="-8" width="5" height="6" fill="#1b1c1f"/><rect x="5" y="-8" width="5" height="6" fill="#1b1c1f"/>
       </g>
       <g id="obj-note" fill="var(--text)">
-        <ellipse cx="-10" cy="14" rx="9" ry="7" transform="rotate(-20 -10 14)"/>
-        <ellipse cx="14" cy="8" rx="9" ry="7" transform="rotate(-20 14 8)"/>
-        <rect x="-3" y="-22" width="4" height="36"/><rect x="21" y="-28" width="4" height="36"/>
+        <!-- stems start inside the beam and end inside the noteheads, so no edges show -->
+        <rect x="-3" y="-16" width="4" height="30"/><rect x="21" y="-22" width="4" height="30"/>
         <path d="M-3 -22 L25 -28 L25 -18 L-3 -12 Z"/>
+        <ellipse cx="-6" cy="14" rx="9" ry="7" transform="rotate(-20 -6 14)"/>
+        <ellipse cx="18" cy="8" rx="9" ry="7" transform="rotate(-20 18 8)"/>
       </g>
     </defs>
 
@@ -303,8 +304,8 @@
 
   const frame = now => {
     if (start === null) start = now;
-    const elapsed = now - start;
-    if (elapsed > FLIGHT + GAP) { start = now; flashedIn = flashedOut = false; next(); }
+    let elapsed = now - start;
+    if (elapsed > FLIGHT + GAP) { start = now; elapsed = 0; flashedIn = flashedOut = false; next(); }
     const k = Math.min(elapsed / FLIGHT, 1);
     const t = T0 + (T1 - T0) * k;
     if (!flashedOut && t > 0) { flashedOut = true; flash(portals[0]); }
