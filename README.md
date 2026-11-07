@@ -24,4 +24,4 @@ The page contains the install steps for Claude (section "Installation instructio
 | `skills/source-reference/` | Background knowledge Claude loads automatically: how to look things up, scale, models, materials, sound, compiling |
 | `templates/user-CLAUDE.md` | Personal preferences, installed to `~/.claude/CLAUDE.md` (merged, never overwritten) |
 | `index.html` | The welcome page served at peaj.de/bday (GitHub Pages) |
-| `card/` | The printed birthday card (A5): HTML sources, `render.py` (Edge + Pillow) and `print-sheet.pdf` for A4 duplex printing |
+| `card/` | The printed birthday card (A5): HTML sources, `render.py` (Edge + Pillow) and `folding-card.pdf` (one-sided A4, folded). The guest pass version is built into `card/private/` and never committed |

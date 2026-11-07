@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Karte – Faltkarte A4</title>
+<!-- One-sided A4 portrait sheet, printed borderless and folded in half to an A5 landscape card
+     (fold at the top). Bottom half: front. Top half: back, upside down, so it reads upright when
+     the closed card is turned over sideways. The inside stays blank for handwriting.
+     ?private uses private/card-back-bleed.jpg (with the guest pass) instead of the public back. -->
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  html, body { margin: 0; }
+  .sheet { position: relative; width: 210mm; height: 297mm; overflow: hidden; background: #fff; }
+  /* each half is 148.5 mm; the card is 148 mm, the 3 mm bleed fills the rest and the side edges */
+  .half { position: absolute; left: 0; width: 210mm; height: 148.5mm; overflow: hidden; }
+  .half img { position: absolute; left: -3.048mm; top: -3.048mm; width: 216.096mm; height: 154.096mm; }
+  .front { top: 148.5mm; }
+  .back { top: 0; transform: rotate(180deg); }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="half back"><img id="back" src="card-back-bleed.jpg" alt=""></div>
+  <div class="half front"><img src="card-front-bleed.jpg" alt=""></div>
+</div>
+<script>
+if (location.search.includes("private")) document.getElementById("back").src = "private/card-back-bleed.jpg";
+</script>
+</body>
+</html>

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>Karte – Rückseite</title>
-<!-- A5 landscape at 300 dpi: 2480 x 1748 px. Keep text 90 px (7.5 mm) away from the edges. -->
+<!-- A5 landscape at 300 dpi: 2480 x 1748 px. Keep text 90 px (7.5 mm) away from the edges.
+     ?guest adds the guest pass QR code from private/guest-qr.svg (gitignored, never published). -->
 <link rel="stylesheet" href="card.css">
 <script src="bg.js"></script>
 </head>
@@ -14,7 +15,8 @@
     <p class="eyebrow">Dein Geschenk</p>
     <h2>Claude als Assistent für deine Projekte</h2>
     <ol class="steps">
-      <li><strong>Geschenk einlösen</strong>Auf <span class="mono">claude.ai</span> anmelden und einlösen (im Browser).</li>
+      <li class="if-guest"><strong>Claude ausprobieren</strong>Gastpass scannen und Konto anlegen: 7&nbsp;Tage gratis.</li>
+      <li class="if-public"><strong>Konto anlegen</strong>Auf <span class="mono">claude.ai</span> anmelden (am besten im Browser).</li>
       <li><strong>Claude Desktop installieren</strong><span class="mono">claude.ai/download</span>, dann oben den Tab „Code“.</li>
       <li><strong>Kit installieren</strong>Neue Session starten und eingeben:<br>
         <span class="prompt mono">Installiere die Skills von peaj.de/bday</span></li>
@@ -22,13 +24,25 @@
         <span class="prompt mono">/onboarding</span></li>
     </ol>
   </div>
-  <div class="qr-box">
-    <img src="qr.svg" alt="QR-Code zu peaj.de/bday">
-    <p class="url mono">peaj.de/bday</p>
-    <p class="hint">Die ganze Anleitung</p>
+  <div class="qr-col">
+    <div class="qr-box if-guest">
+      <p class="qr-label">Gastpass · 7 Tage gratis</p>
+      <img src="private/guest-qr.svg" alt="QR-Code: Gastpass für Claude">
+      <p class="hint">Scannen und anmelden</p>
+    </div>
+    <div class="qr-box">
+      <img src="qr.svg" alt="QR-Code zu peaj.de/bday">
+      <p class="url mono">peaj.de/bday</p>
+      <p class="hint">Die ganze Anleitung</p>
+    </div>
   </div>
 </div>
 <script>
+// Public version (no ?guest): drop the guest pass parts, so step numbers and colours stay right.
+const guest = location.search.includes("guest");
+document.querySelectorAll(guest ? ".if-public" : ".if-guest").forEach(e => e.remove());
+if (guest) document.documentElement.classList.add("guest");
+
 paintBackground({
   gap: "#e9e6df", tile: "#f6f5f2", tileAlt: "#f1efea", seed: 5,
   lights: [

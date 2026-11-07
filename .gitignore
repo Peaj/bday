@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# Private card variant (guest pass link): never commit or publish
+card/private/
