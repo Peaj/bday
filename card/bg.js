@@ -1,6 +1,6 @@
 // Full-bleed card background: a wall of slightly uneven panels, lit by blue and orange light.
 // paintBackground({ gap, tile, tileAlt, lights: [{x, y, r, color, opacity}], vignette })
-// render.py adds ?bleed to render with 3 mm (36 px) extra background on every side.
+// render.py adds ?bleed to render with 48 px extra background on every side (3 mm at 155 mm card width).
 if (location.search.includes("bleed")) document.documentElement.classList.add("bleed");
 
 function paintBackground(opts) {

@@ -2,29 +2,57 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<title>Karte – Faltkarte A4</title>
-<!-- One-sided A4 portrait sheet, printed borderless and folded in half to an A5 landscape card
-     (fold at the top). Bottom half: front. Top half: back, upside down, so it reads upright when
-     the closed card is turned over sideways. The inside stays blank for handwriting.
-     ?private uses private/card-back-bleed.jpg (with the guest pass) instead of the public back. -->
+<title>Karte – Faltkarte</title>
+<!-- One-sided A4 portrait sheet. Cut out along the crop marks and fold in the middle (fold marks):
+     a landscape card with the fold at the top. Bottom panel: front. Top panel: back, upside down,
+     so it reads upright when the closed card is turned over sideways. The inside stays blank.
+     render.py passes the panel size: ?pw=<mm>&ph=<mm>&b=<bleed mm>[&private]
+     &private uses private/card-back-bleed.jpg (with the guest pass) instead of the public back. -->
 <style>
   @page { size: A4 portrait; margin: 0; }
   html, body { margin: 0; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color: #6b6f79; }
   .sheet { position: relative; width: 210mm; height: 297mm; overflow: hidden; background: #fff; }
-  /* each half is 148.5 mm; the card is 148 mm, the 3 mm bleed fills the rest and the side edges */
-  .half { position: absolute; left: 0; width: 210mm; height: 148.5mm; overflow: hidden; }
-  .half img { position: absolute; left: -3.048mm; top: -3.048mm; width: 216.096mm; height: 154.096mm; }
-  .front { top: 148.5mm; }
-  .back { top: 0; transform: rotate(180deg); }
+  .half { position: absolute; overflow: hidden; }
+  .half img { position: absolute; }
+  .mark { position: absolute; background: #000; }
+  .fold { position: absolute; height: 0; border-top: 0.25mm dashed #000; }
+  .hint { position: absolute; left: 0; right: 0; bottom: 8mm; font-size: 8pt; text-align: center; }
 </style>
 </head>
 <body>
-<div class="sheet">
-  <div class="half back"><img id="back" src="card-back-bleed.jpg" alt=""></div>
-  <div class="half front"><img src="card-front-bleed.jpg" alt=""></div>
+<div class="sheet" id="sheet">
+  <div class="half" id="back-half"><img id="back" src="card-back-bleed.jpg" alt=""></div>
+  <div class="half" id="front-half"><img src="card-front-bleed.jpg" alt=""></div>
+  <div class="hint">Einseitig drucken · Tatsächliche Größe / 100 % (nicht „An Seite anpassen“) ·
+    an den Schnittmarken ausschneiden · an den gestrichelten Marken falten</div>
 </div>
 <script>
-if (location.search.includes("private")) document.getElementById("back").src = "private/card-back-bleed.jpg";
+const q = new URLSearchParams(location.search);
+const PW = +q.get("pw") || 155, PH = +q.get("ph") || 109.2, B = +q.get("b") || 3;
+if (q.has("private")) document.getElementById("back").src = "private/card-back-bleed.jpg";
+
+const SW = 210, SH = 297;
+const L = (SW - PW) / 2, T = (SH - 2 * PH) / 2, FOLD = T + PH, R = L + PW, BOT = T + 2 * PH;
+const mm = v => v + "mm";
+const place = (el, x, y, w, h) => Object.assign(el.style, { left: mm(x), top: mm(y), width: mm(w), height: mm(h) });
+
+// Each half shows one panel plus bleed on its three outer sides; the panels meet at the fold.
+const back = document.getElementById("back-half"), front = document.getElementById("front-half");
+place(front, L - B, FOLD, PW + 2 * B, PH + B);
+place(front.querySelector("img"), 0, -B, PW + 2 * B, PH + 2 * B);
+// back: same box above the fold, turned 180 degrees so its top edge lies on the fold
+place(back, L - B, T - B, PW + 2 * B, PH + B);
+back.style.transform = "rotate(180deg)";
+place(back.querySelector("img"), 0, -B, PW + 2 * B, PH + 2 * B);
+
+const sheet = document.getElementById("sheet");
+const add = (cls, x, y, w, h) => { const m = document.createElement("div"); m.className = cls; place(m, x, y, w, h); sheet.appendChild(m); };
+const OFF = B + 2, LEN = 8, LW = 0.2;
+for (const x of [L, R]) { add("mark", x - LW / 2, T - OFF - LEN, LW, LEN); add("mark", x - LW / 2, BOT + OFF, LW, LEN); }
+for (const y of [T, BOT]) { add("mark", L - OFF - LEN, y - LW / 2, LEN, LW); add("mark", R + OFF, y - LW / 2, LEN, LW); }
+add("fold", L - OFF - LEN, FOLD, LEN, 0);
+add("fold", R + OFF, FOLD, LEN, 0);
 </script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-/* Card styles. Print colours = the page's light theme. 1 px = 1 dot at 300 dpi (A5 landscape). */
+/* Card styles. Print colours = the page's light theme. Designed at 2480 x 1748 CSS px (A5 at 300 dpi); render.py scales it to the print size. */
 :root {
   --paper: #ffffff;
   --text: #1b1c1f;
@@ -14,8 +14,8 @@ body { color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; }
 .card { position: relative; width: 2480px; height: 1748px; padding: 120px 150px; }
 .card > .bg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .card > :not(.bg) { position: relative; z-index: 1; }
-html.bleed, html.bleed body { width: 2552px; height: 1820px; }
-html.bleed .card { position: absolute; left: 36px; top: 36px; }
+html.bleed, html.bleed body { width: 2576px; height: 1844px; }
+html.bleed .card { position: absolute; left: 48px; top: 48px; }
 code, .mono { font-family: "Cascadia Mono", Consolas, ui-monospace, monospace; }
 
 /* Front */
