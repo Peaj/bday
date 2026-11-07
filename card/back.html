@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Karte – Rückseite</title>
+<!-- A5 landscape at 300 dpi: 2480 x 1748 px. Keep text 90 px (7.5 mm) away from the edges. -->
+<link rel="stylesheet" href="card.css">
+<script src="bg.js"></script>
+</head>
+<body>
+<div class="card back">
+  <svg class="bg" viewBox="0 0 2480 1748" aria-hidden="true"></svg>
+  <div class="panel">
+    <p class="eyebrow">Dein Geschenk</p>
+    <h2>Claude als Assistent für deine Projekte</h2>
+    <ol class="steps">
+      <li><strong>Geschenk einlösen</strong>Auf <span class="mono">claude.ai</span> anmelden und einlösen (im Browser).</li>
+      <li><strong>Claude Desktop installieren</strong><span class="mono">claude.ai/download</span>, dann oben den Tab „Code“.</li>
+      <li><strong>Kit installieren</strong>Neue Session starten und eingeben:<br>
+        <span class="prompt mono">Installiere die Skills von peaj.de/bday</span></li>
+      <li><strong>Loslegen</strong>Neue Session mit deinem Mod-Ordner, dann:<br>
+        <span class="prompt mono">/onboarding</span></li>
+    </ol>
+  </div>
+  <div class="qr-box">
+    <img src="qr.svg" alt="QR-Code zu peaj.de/bday">
+    <p class="url mono">peaj.de/bday</p>
+    <p class="hint">Die ganze Anleitung</p>
+  </div>
+</div>
+<script>
+paintBackground({
+  gap: "#e9e6df", tile: "#f6f5f2", tileAlt: "#f1efea", seed: 5,
+  lights: [
+    { x: 0, y: 0, r: 1100, ry: 900, color: "#1f8fe0", opacity: 0.22 },
+    { x: 2480, y: 1748, r: 1100, ry: 900, color: "#e8761c", opacity: 0.24 },
+  ],
+});
+</script>
+</body>
+</html>

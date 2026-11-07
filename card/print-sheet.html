@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Karte – Druckbogen A4</title>
+<!-- Two A4 landscape pages: front and back of the A5 card, centred, with 3 mm bleed and crop marks.
+     The card is centred on both pages, so front and back line up whichever way the printer flips. -->
+<style>
+  @page { size: A4 landscape; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: "Segoe UI", system-ui, sans-serif; color: #6b6f79; }
+  .page { position: relative; width: 297mm; height: 210mm; overflow: hidden; break-after: page; }
+  .page:last-child { break-after: auto; }
+  /* trim box 210 x 148 mm at (43.5, 31); image includes 3.048 mm bleed (36 px at 300 dpi) */
+  .art { position: absolute; left: 40.452mm; top: 27.952mm; width: 216.096mm; height: 154.096mm; }
+  .mark { position: absolute; background: #000; }
+  .v { width: 0.2mm; height: 9mm; }
+  .h { width: 9mm; height: 0.2mm; }
+  .hint { position: absolute; left: 43.5mm; right: 43.5mm; bottom: 10mm; font-size: 8.5pt; text-align: center; }
+  .label { position: absolute; left: 43.5mm; top: 10mm; font-size: 8.5pt; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="label">Seite 1 · Vorderseite</div>
+  <img class="art" src="card-front-bleed.jpg" alt="">
+  <div class="marks"></div>
+  <div class="hint">Beidseitig drucken, an der kurzen Kante wenden · Tatsächliche Größe / 100 % (nicht „An Seite anpassen“) · An den Schnittmarken schneiden</div>
+</div>
+<div class="page">
+  <div class="label">Seite 2 · Rückseite</div>
+  <img class="art" src="card-back-bleed.jpg" alt="">
+  <div class="marks"></div>
+  <div class="hint">Karte A5 (210 × 148 mm) · peaj.de/bday</div>
+</div>
+<script>
+// Crop marks at the trim lines, starting 5 mm outside the trim (2 mm past the bleed).
+const L = 43.5, R = 253.5, T = 31, B = 179, OFF = 5, LEN = 9;
+document.querySelectorAll(".marks").forEach(box => {
+  const add = (cls, x, y) => {
+    const m = document.createElement("div");
+    m.className = "mark " + cls;
+    m.style.left = x + "mm"; m.style.top = y + "mm";
+    box.appendChild(m);
+  };
+  for (const x of [L, R]) {
+    add("v", x - 0.1, T - OFF - LEN);
+    add("v", x - 0.1, B + OFF);
+  }
+  for (const y of [T, B]) {
+    add("h", L - OFF - LEN, y - 0.1);
+    add("h", R + OFF, y - 0.1);
+  }
+});
+</script>
+</body>
+</html>

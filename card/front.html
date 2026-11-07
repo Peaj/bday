@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Karte – Vorderseite</title>
+<!-- A5 landscape at 300 dpi: 2480 x 1748 px. Keep text 90 px (7.5 mm) away from the edges. -->
+<link rel="stylesheet" href="card.css">
+<script src="bg.js"></script>
+</head>
+<body>
+<div class="card front">
+  <svg class="bg" viewBox="0 0 2480 1748" aria-hidden="true"></svg>
+  <svg class="scene" viewBox="30 18 700 262" aria-hidden="true">
+    <defs>
+      <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
+      <radialGradient id="inner-a"><stop offset="0" stop-color="#4cb2ff" stop-opacity="0.15"/><stop offset="1" stop-color="#4cb2ff" stop-opacity="0.8"/></radialGradient>
+      <radialGradient id="inner-b"><stop offset="0" stop-color="#ff9440" stop-opacity="0.15"/><stop offset="1" stop-color="#ff9440" stop-opacity="0.8"/></radialGradient>
+      <clipPath id="flight-clip" clipPathUnits="userSpaceOnUse"><polygon id="clip-poly" points="0,0"/></clipPath>
+
+      <g id="obj-gift">
+        <rect x="-21" y="-12" width="42" height="32" rx="3" fill="#8b5cf6"/>
+        <rect x="-24" y="-20" width="48" height="11" rx="3" fill="#a78bfa"/>
+        <rect x="-4" y="-20" width="8" height="40" fill="#facc15"/>
+        <path d="M0 -20 C -6 -34, -22 -30, -12 -21 Z M0 -20 C 6 -34, 22 -30, 12 -21 Z" fill="#facc15"/>
+      </g>
+      <g id="obj-cube">
+        <rect x="-22" y="-22" width="44" height="44" rx="6" fill="#cfd3da" stroke="#7d838e" stroke-width="2"/>
+        <path d="M-22 -10 V-16 a6 6 0 0 1 6 -6 H-10 M10 -22 H16 a6 6 0 0 1 6 6 V-10 M22 10 V16 a6 6 0 0 1 -6 6 H10 M-10 22 H-16 a6 6 0 0 1 -6 -6 V10"
+              fill="none" stroke="#6b7280" stroke-width="5" stroke-linecap="round"/>
+        <circle r="11" fill="#eef0f3" stroke="#9aa1ab" stroke-width="2"/>
+        <path d="M0 6 C -9 -1, -7 -8, -3 -7 C -1 -6.5, 0 -5, 0 -4 C 0 -5, 1 -6.5, 3 -7 C 7 -8, 9 -1, 0 6 Z" fill="#ec4899"/>
+      </g>
+      <g id="obj-critter" fill="#d97757">
+        <rect x="-18" y="-14" width="36" height="20"/>
+        <rect x="-24" y="-6" width="6" height="6"/><rect x="18" y="-6" width="6" height="6"/>
+        <rect x="-15" y="6" width="5" height="9"/><rect x="-5" y="6" width="4" height="9"/>
+        <rect x="2" y="6" width="4" height="9"/><rect x="10" y="6" width="5" height="9"/>
+        <rect x="-10" y="-8" width="5" height="6" fill="#1b1c1f"/><rect x="5" y="-8" width="5" height="6" fill="#1b1c1f"/>
+      </g>
+      <g id="obj-note" fill="#ecebe8">
+        <rect x="-3" y="-16" width="4" height="30"/><rect x="21" y="-22" width="4" height="30"/>
+        <path d="M-3 -22 L25 -28 L25 -18 L-3 -12 Z"/>
+        <ellipse cx="-6" cy="14" rx="9" ry="7" transform="rotate(-20 -6 14)"/>
+        <ellipse cx="18" cy="8" rx="9" ry="7" transform="rotate(-20 18 8)"/>
+      </g>
+    </defs>
+
+    <g id="confetti"></g>
+
+    <g id="portal-a" class="portal" transform="translate(140 190) rotate(-40)">
+      <ellipse class="glow" rx="36" ry="84"/>
+      <ellipse class="inner" rx="34" ry="82" fill="url(#inner-a)"/>
+      <ellipse class="swirl" rx="26" ry="70"/>
+      <ellipse class="rim" rx="34" ry="82"/>
+    </g>
+    <g id="portal-b" class="portal" transform="translate(620 190) rotate(40)">
+      <ellipse class="glow" rx="36" ry="84"/>
+      <ellipse class="inner" rx="34" ry="82" fill="url(#inner-b)"/>
+      <ellipse class="swirl" rx="26" ry="70"/>
+      <ellipse class="rim" rx="34" ry="82"/>
+    </g>
+
+    <g clip-path="url(#flight-clip)">
+      <path class="trail" d="M140 190 Q380 -11.4 620 190"/>
+      <g id="flyers"></g>
+    </g>
+  </svg>
+
+  <h1>Happy Birthday!</h1>
+  <p class="sub">Für deine Mod, deine Scans und deinen Sound.</p>
+</div>
+
+<script>
+// Same geometry as the page header (index.html), frozen: four objects along one arc.
+const A = { x: 140, y: 190 }, B = { x: 620, y: 190 };
+const ANGLE = 40 * Math.PI / 180;
+const height = (B.x - A.x) * Math.tan(ANGLE) / 4;
+const nA = [Math.cos(ANGLE), -Math.sin(ANGLE)], nB = [-Math.cos(ANGLE), -Math.sin(ANGLE)];
+const clipHalf = (poly, p, n) => {
+  const side = q => (q[0] - p.x) * n[0] + (q[1] - p.y) * n[1];
+  const out = [];
+  poly.forEach((cur, i) => {
+    const prev = poly[(i + poly.length - 1) % poly.length];
+    const sc = side(cur), sp = side(prev);
+    if (sc >= 0 !== sp >= 0) { const t = sp / (sp - sc); out.push([prev[0] + (cur[0] - prev[0]) * t, prev[1] + (cur[1] - prev[1]) * t]); }
+    if (sc >= 0) out.push(cur);
+  });
+  return out;
+};
+let poly = [[-200, -200], [960, -200], [960, 480], [-200, 480]];
+poly = clipHalf(clipHalf(poly, A, nA), B, nB);
+document.getElementById("clip-poly").setAttribute("points", poly.map(p => p.join(",")).join(" "));
+
+const NS = "http://www.w3.org/2000/svg";
+const flyers = document.getElementById("flyers");
+[["obj-gift", 0.19, -14], ["obj-cube", 0.4, 18], ["obj-critter", 0.6, 6], ["obj-note", 0.81, -8]].forEach(([id, t, rot]) => {
+  const x = A.x + (B.x - A.x) * t, y = A.y - 4 * height * t * (1 - t);
+  const u = document.createElementNS(NS, "use");
+  u.setAttribute("href", "#" + id);
+  u.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${rot}) scale(1.45)`);
+  flyers.appendChild(u);
+});
+
+// Confetti: deterministic, kept off the portals and the flight path.
+let seed = 7;
+const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const colors = ["#4cb2ff", "#ff9440", "#8b5cf6", "#facc15", "#ec4899"];
+const confetti = document.getElementById("confetti");
+for (let placed = 0, tries = 0; placed < 46 && tries < 2000; tries++) {
+  const x = 40 + rnd() * 680, y = 24 + rnd() * 250;
+  const nearPortal = Math.hypot(x - A.x, y - A.y) < 95 || Math.hypot(x - B.x, y - B.y) < 95;
+  const t = (x - A.x) / (B.x - A.x), arcY = A.y - 4 * height * t * (1 - t);
+  const nearArc = t > -0.05 && t < 1.05 && Math.abs(y - arcY) < 52;
+  if (nearPortal || nearArc) continue;
+  const r = document.createElementNS(NS, "rect");
+  const w = 3 + rnd() * 4, h = 6 + rnd() * 7;
+  r.setAttribute("x", (-w / 2).toFixed(1)); r.setAttribute("y", (-h / 2).toFixed(1));
+  r.setAttribute("width", w.toFixed(1)); r.setAttribute("height", h.toFixed(1)); r.setAttribute("rx", "1");
+  r.setAttribute("fill", colors[placed % colors.length]);
+  r.setAttribute("opacity", (0.55 + rnd() * 0.4).toFixed(2));
+  r.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(rnd() * 180).toFixed(0)})`);
+  confetti.appendChild(r);
+  placed++;
+}
+
+const a = centerOf("portal-a"), b = centerOf("portal-b");
+paintBackground({
+  gap: "#0b0c0f", tile: "#17191f", tileAlt: "#14161b", vignette: 0.6,
+  lights: [
+    { x: a.x, y: a.y, r: 900, ry: 760, color: "#4cb2ff", opacity: 0.32 },
+    { x: b.x, y: b.y, r: 900, ry: 760, color: "#ff9440", opacity: 0.30 },
+    { x: 1240, y: 1500, r: 1300, ry: 420, color: "#8b5cf6", opacity: 0.10 },
+  ],
+});
+</script>
+</body>
+</html>

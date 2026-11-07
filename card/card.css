@@ -1,0 +1,56 @@
+/* Card styles. Print colours = the page's light theme. 1 px = 1 dot at 300 dpi (A5 landscape). */
+:root {
+  --paper: #ffffff;
+  --text: #1b1c1f;
+  --muted: #5d6068;
+  --border: #e2e0da;
+  --accent-a: #e8761c;
+  --accent-b: #1f8fe0;
+  --code-bg: #efede7;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; width: 2480px; height: 1748px; overflow: hidden; background: var(--paper); }
+body { color: var(--text); font-family: "Segoe UI", system-ui, sans-serif; }
+.card { position: relative; width: 2480px; height: 1748px; padding: 120px 150px; }
+.card > .bg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.card > :not(.bg) { position: relative; z-index: 1; }
+html.bleed, html.bleed body { width: 2552px; height: 1820px; }
+html.bleed .card { position: absolute; left: 36px; top: 36px; }
+code, .mono { font-family: "Cascadia Mono", Consolas, ui-monospace, monospace; }
+
+/* Front */
+.front { color: #f3f2ef; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 150px; }
+.front .scene { width: 2180px; height: auto; margin-top: -10px; overflow: visible; }
+.portal .rim { fill: none; stroke-width: 7; }
+.portal .glow { fill: none; stroke-width: 22; opacity: 0.9; filter: url(#blur); }
+.portal .inner { opacity: 0.9; }
+.portal .swirl { fill: none; stroke-width: 2.5; stroke-dasharray: 18 26; opacity: 0.55; }
+#portal-a .rim, #portal-a .glow, #portal-a .swirl { stroke: #4cb2ff; }
+#portal-b .rim, #portal-b .glow, #portal-b .swirl { stroke: #ff9440; }
+.trail { fill: none; stroke: #6b6f79; stroke-width: 2; stroke-dasharray: 2 9; stroke-linecap: round; }
+.front h1 { font-size: 168px; line-height: 1.05; font-weight: 800; letter-spacing: -0.025em; margin: 70px 0 0; text-align: center; }
+.front .sub { font-size: 64px; color: #b4b6bd; margin: 36px 0 0; text-align: center; }
+
+/* Back */
+.back { display: grid; grid-template-columns: 1fr 720px; gap: 80px; align-items: center; }
+.panel { background: rgba(255,255,255,0.9); border: 4px solid var(--border); border-radius: 48px; padding: 72px 84px 80px; box-shadow: 0 30px 80px rgba(27,28,31,0.12); }
+.eyebrow { font-size: 40px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent-a); margin: 0; }
+.back h2 { font-size: 96px; line-height: 1.08; font-weight: 800; letter-spacing: -0.02em; margin: 16px 0 52px; }
+ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: s; display: grid; gap: 40px; }
+ol.steps li { counter-increment: s; position: relative; padding-left: 116px; font-size: 44px; line-height: 1.35; color: var(--muted); }
+ol.steps li::before {
+  content: counter(s); position: absolute; left: 0; top: -2px;
+  width: 76px; height: 76px; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 800; font-size: 44px; color: #fff; background: var(--accent-b);
+}
+ol.steps li:nth-child(even)::before { background: var(--accent-a); }
+ol.steps strong { display: block; color: var(--text); font-size: 50px; }
+.prompt {
+  display: inline-block; margin-top: 10px; padding: 8px 22px; border-radius: 14px; font-size: 40px;
+  background: var(--code-bg); border-left: 8px solid var(--accent-a); color: var(--text);
+}
+/* 90 px padding around the QR = 4 modules of quiet zone */
+.qr-box { background: #fff; box-shadow: 0 30px 80px rgba(27,28,31,0.12); border: 4px solid var(--border); border-radius: 48px; padding: 90px 60px 52px; text-align: center; }
+.qr-box img { width: 540px; height: 540px; display: block; margin: 0 auto; }
+.qr-box .url { font-size: 70px; font-weight: 700; margin: 44px 0 6px; color: var(--text); }
+.qr-box .hint { font-size: 38px; color: var(--muted); margin: 0; }
